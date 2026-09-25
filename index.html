@@ -68,6 +68,39 @@
       container-type: inline-size;
     }
 
+    /* a scene holds its contents back until every picture in it has arrived, so the
+       hints and arrows never show up against a half-drawn window */
+    .shot.loading > * {
+      opacity: 0;
+    }
+
+    /* an animation rather than a transition: a standing transition keeps these on their
+       own compositing layer, which shifts the filtered chips by a pixel */
+    .shot.shown > * {
+      animation: reveal 0.25s ease;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; }
+    }
+
+    .shot.loading::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #dadce0;
+      border-top-color: #9aa0a6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(1turn); }
+    }
+
     /* the mask below runs after the plate is painted and would eat a box-shadow of its own,
        so the shadow is cast from here, off the already cut shape */
     .cast {
@@ -404,6 +437,31 @@
 
     <p class="sign">Resize images and enjoy life 🙂</p>
   </div>
+
+  <script>
+    // hold each scene back until its pictures are in; the class is set here rather than
+    // in the markup so the page still shows everything when scripts are off
+    for (const shot of document.querySelectorAll('.shot')) {
+      const waiting = [...shot.querySelectorAll('img')].filter(img => !img.complete);
+      if (!waiting.length) continue;
+
+      shot.classList.add('loading');
+      let left = waiting.length;
+      const tick = () => {
+        left -= 1;
+        if (left) return;
+        shot.classList.remove('loading');
+        shot.classList.add('shown');
+        setTimeout(() => shot.classList.remove('shown'), 400);
+      };
+
+      for (const img of waiting) {
+        img.addEventListener('load', tick, { once: true });
+        // a picture that fails must not keep the scene hidden
+        img.addEventListener('error', tick, { once: true });
+      }
+    }
+  </script>
 
   <script type="module">
     // the placement rig lives in editor.js and is not part of the page;
