@@ -34,15 +34,15 @@
       box-shadow: 0 12px 32px rgba(32, 33, 36, 0.14);
     }
 
-    /* the embed paints its own margins (13px top, 35px sides) and a help icon pinned to its bottom-left
-       corner; the frame is oversized and shifted so the margins and the icon's strip fall outside the plate.
-       Only the icon's strip is cut at the bottom: the content is ~50px taller for a signed-in viewer
-       (the account row), so a tighter cut would clip the footer for them */
+    /* the embed paints its own margins (13px top, 35px sides); the frame is oversized and shifted so
+       those fall outside the plate and the plate's own 24px shows instead. Nothing is cut at the bottom:
+       the content is ~50px taller for a signed-in viewer (the account row), and Google's help icon
+       stays where the embed puts it, in the bottom-left corner */
     iframe {
       display: block;
       width: calc(100% + 70px);
-      height: 640px;
-      margin: -13px -35px -60px;
+      height: 580px;
+      margin: -13px -35px 0;
       border: 0;
     }
   </style>
